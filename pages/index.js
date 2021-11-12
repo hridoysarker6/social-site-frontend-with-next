@@ -1,7 +1,10 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../context";
 function HomePage() {
   const [state, setState] = useContext(UserContext);
+  useEffect(() => {
+    setState(JSON.parse(window.localStorage.getItem("auth")));
+  }, []);
   return (
     <div className="container">
       <div className="row">
