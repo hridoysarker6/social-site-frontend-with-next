@@ -18,13 +18,10 @@ function Login() {
 
     try {
       setLoading(true);
-      const { data } = await axios.post(
-        `${process.env.NEXT_PUBLIC_API}/login`,
-        {
-          email,
-          password,
-        }
-      );
+      const { data } = await axios.post(`/login`, {
+        email,
+        password,
+      });
       setState({
         user: data.user,
         token: data.token,
@@ -73,7 +70,16 @@ function Login() {
           <p className="text-center">
             Not Yet Register?
             <Link href="/register">
-              <a className="btn  btn-sm btn-primary">Register</a>
+              <a className="text-primary">Register</a>
+            </Link>
+          </p>
+        </div>
+      </div>
+      <div className="row">
+        <div className="col">
+          <p className="text-center">
+            <Link href="/forgot-password">
+              <a className="text-danger">Forgot Password</a>
             </Link>
           </p>
         </div>
