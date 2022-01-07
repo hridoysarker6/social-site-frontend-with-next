@@ -29,7 +29,7 @@ function Login() {
 
       // save data in localStorage
       window.localStorage.setItem("auth", JSON.stringify(data));
-      router.push("/");
+      router.push("/user/dashboard");
     } catch (err) {
       toast.error(err.response?.data);
       setLoading(false);

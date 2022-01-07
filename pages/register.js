@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Modal } from "antd";
 import Link from "next/dist/client/link";
-
+import { useRouter } from "next/router";
 import AuthForm from "../components/forms/AuthForm";
+import { UserContext } from "../context";
 
 function Register() {
   const [name, setName] = useState();
@@ -13,6 +14,14 @@ function Register() {
   const [secret, setSecret] = useState();
   const [ok, setOk] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const [state, setState] = useContext(UserContext);
+
+  useEffect(() => {
+    setState(JSON.parse(window.localStorage.getItem("auth")));
+  }, []);
+
+  if (state && state.token) router.push("/");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,8 +44,6 @@ function Register() {
       toast.error(err.response.data);
       setLoading(false);
     }
-
-    // console.log(name, email, password, secret);
   };
   return (
     <div className="container-fluid">

@@ -34,22 +34,54 @@ export function Nav() {
                 Home
               </a>
             </Link>
+
             <div className="d-flex">
               {state !== null ? (
                 <>
-                  <Link href="/user/dashboard">
+                  <div className="dropdown">
                     <a
-                      className={`nav-link text-light ${
-                        current === "/user/dashboard" && "active"
-                      }`}
+                      className="btn text-light dropdown-toggle"
+                      role="button"
+                      id="dropdownMenuLink"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
                     >
                       {state?.user?.name}
                     </a>
-                  </Link>
+                    <ul
+                      className="dropdown-menu"
+                      aria-labelledby="dropdownMenuLink"
+                    >
+                      <li>
+                        <Link href="/user/dashboard">
+                          <a
+                            className={`nav-link dropdown-item ${
+                              current === "/user/dashboard" && "active"
+                            }`}
+                          >
+                            Dashboard
+                          </a>
+                        </Link>
+                      </li>
 
-                  <a onClick={logout} className="nav-link text-light">
-                    Logout
-                  </a>
+                      <li>
+                        <Link href="/user/profile/update">
+                          <a
+                            className={`nav-link dropdown-item ${
+                              current === "/user/profile/update" && "active"
+                            }`}
+                          >
+                            Profile
+                          </a>
+                        </Link>
+                      </li>
+                      <li>
+                        <a onClick={logout} className="nav-link dropdown-item">
+                          Logout
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
                 </>
               ) : (
                 <>

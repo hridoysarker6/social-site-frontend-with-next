@@ -12,8 +12,38 @@ export const AuthForm = ({
   setSecret,
   loading,
   page,
+  userName,
+  setUserName,
+  about,
+  setAbout,
+  profileUpdate,
 }) => (
   <form onSubmit={handleSubmit}>
+    {profileUpdate && (
+      <div className="form-group">
+        <label htmlFor="userName">User Name</label>
+        <input
+          type="text"
+          name="userName"
+          className="form-control"
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
+        />
+      </div>
+    )}
+
+    {profileUpdate && (
+      <div className="form-group">
+        <label htmlFor="about">About</label>
+        <input
+          type="text"
+          name="about"
+          className="form-control"
+          value={about}
+          onChange={(e) => setAbout(e.target.value)}
+        />
+      </div>
+    )}
     {page !== "login" && (
       <div className="form-group">
         <label htmlFor="name">Name</label>
@@ -32,6 +62,7 @@ export const AuthForm = ({
         type="email"
         name="email"
         className="form-control"
+        disabled={profileUpdate}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -78,7 +109,9 @@ export const AuthForm = ({
     <div className="form-group pt-4">
       <button
         disabled={
-          page === "login"
+          profileUpdate
+            ? loading
+            : page === "login"
             ? !email || !password
             : !name || !email || !password || !secret
         }

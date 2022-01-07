@@ -7,7 +7,7 @@ const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import { CameraOutlined, LoadingOutlined } from "@ant-design/icons";
 
-export const CreatePostForm = ({
+export const PostForm = ({
   content,
   setContent,
   postSubmit,
@@ -39,7 +39,7 @@ export const CreatePostForm = ({
             Post
           </button>
 
-          <label className="btn btn-small btn-secondary pb-2">
+          <label className="btn btn-small  pb-2">
             {image && image.url ? (
               <Avatar size={30} src={image.url} />
             ) : uploading ? (
@@ -55,4 +55,4 @@ export const CreatePostForm = ({
   );
 };
 
-export default CreatePostForm;
+export default PostForm;
