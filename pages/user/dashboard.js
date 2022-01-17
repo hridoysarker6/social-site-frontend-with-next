@@ -8,7 +8,11 @@ import { toast } from "react-toastify";
 import PostList from "../../components/Cards/PostList";
 import People from "../../components/Cards/People";
 import Link from "next/dist/client/link";
+import { imageSource } from "../../components/functions";
 
+import { Modal, Pagination } from "antd";
+import CommentForm from "../../components/forms/CommentForm";
+import Search from "../../components/Search";
 export const dashboard = () => {
   const [state, setState] = useContext(UserContext);
 
@@ -24,6 +28,14 @@ export const dashboard = () => {
   //people
   const [people, setPeople] = useState([]);
 
+  // comment
+  const [comment, setComment] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [currentPost, setCurrentPost] = useState({});
+  //pagination
+  const [totalPost, setTotalPost] = useState(0);
+  const [page, setPage] = useState(1);
+
   // router
   const router = useRouter();
 
@@ -32,11 +44,19 @@ export const dashboard = () => {
       newsfeed();
       findPeople();
     }
-  }, [state && state.token]);
+  }, [state && state.token, page]);
+
+  useEffect(() => {
+    try {
+      axios.get("/total-posts").then(({ data }) => setTotalPost(data));
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   const newsfeed = async () => {
     try {
-      const { data } = await axios.get("/news-feed");
+      const { data } = await axios.get(`/news-feed/${page}`);
       setPosts(data);
     } catch (err) {
       console.log(err);
@@ -54,6 +74,7 @@ export const dashboard = () => {
     e.preventDefault();
     const { data } = await axios.post("/create-post", { content, image });
     if (data.ok) {
+      setPage(1);
       newsfeed();
       toast.success("post created successfully");
       setContent("");
@@ -100,7 +121,7 @@ export const dashboard = () => {
   const handleFollow = async (user) => {
     try {
       const { data } = await axios.put("/user-follow", { _id: user._id });
-      // console.log(data);
+
       let auth = JSON.parse(localStorage.getItem("auth"));
       auth.user = data;
       localStorage.setItem("auth", JSON.stringify(auth));
@@ -117,6 +138,63 @@ export const dashboard = () => {
     }
   };
 
+  const handleLike = async (_id) => {
+    try {
+      const { data } = await axios.put("/like-post", { _id });
+      newsfeed();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUnlike = async (_id) => {
+    try {
+      const { data } = await axios.put("/unlike-post", { _id });
+      newsfeed();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleComment = (post) => {
+    setVisible(true);
+    setCurrentPost(post);
+  };
+
+  const addComment = async (e) => {
+    //
+    e.preventDefault();
+
+    try {
+      const { data } = await axios.put("/add-comment", {
+        postId: currentPost._id,
+        comment,
+      });
+
+      console.log("add comment", data);
+      setComment("");
+      setVisible(false);
+      newsfeed();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeComment = async (postId, comment) => {
+    // console.log(postId, comment);
+    let answer = window.confirm("Are you sure ?");
+    if (!answer) return;
+    try {
+      const { data } = await axios.put("/remove-comment", {
+        postId,
+        comment,
+      });
+      newsfeed();
+      // console.log("comment remove", data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <UserRoute>
       <div className="container-fluid">
@@ -126,7 +204,7 @@ export const dashboard = () => {
           </div>
         </div>
       </div>
-      .
+
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-8">
@@ -139,9 +217,24 @@ export const dashboard = () => {
               image={image}
             />
             <div className="py-4"></div>
-            <PostList posts={posts} handleDelete={handleDelete} />
+            <PostList
+              posts={posts}
+              handleDelete={handleDelete}
+              handleLike={handleLike}
+              handleUnlike={handleUnlike}
+              handleComment={handleComment}
+              removeComment={removeComment}
+            />
+
+            <Pagination
+              defaultCurrent={page}
+              total={(totalPost / 2) * 10}
+              onChange={(value) => setPage(value)}
+            />
+            {totalPost}
           </div>
           <div className="col-md-4">
+            <Search />
             <div>
               {state && state.user && state.user.following && (
                 <Link href={"/user/following"} className="h6">
@@ -159,6 +252,18 @@ export const dashboard = () => {
             <People people={people} handleFollow={handleFollow} />
           </div>
         </div>
+        <Modal
+          visible={visible}
+          onCancel={() => setVisible(false)}
+          title="Comment"
+          footer={null}
+        >
+          <CommentForm
+            addComment={addComment}
+            setComment={setComment}
+            comment={comment}
+          />
+        </Modal>
       </div>
     </UserRoute>
   );

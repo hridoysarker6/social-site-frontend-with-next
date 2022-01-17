@@ -38,7 +38,7 @@ function Login() {
     // console.log(name, email, password, secret);
   };
 
-  if (state && state.token) router.push("/");
+  if (state && state.token) router.push("/user/dashboard");
   return (
     <div className="container-fluid">
       <div className="row bg-default-image py-5">
