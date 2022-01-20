@@ -13,6 +13,13 @@ import { imageSource } from "../../components/functions";
 import { Modal, Pagination } from "antd";
 import CommentForm from "../../components/forms/CommentForm";
 import Search from "../../components/Search";
+
+import { io } from "socket.io-client";
+
+const socket = io(process.env.NEXT_PUBLIC_SOCKETIO, {
+  reconnection: true,
+});
+
 export const dashboard = () => {
   const [state, setState] = useContext(UserContext);
 
@@ -73,12 +80,14 @@ export const dashboard = () => {
   const postSubmit = async (e) => {
     e.preventDefault();
     const { data } = await axios.post("/create-post", { content, image });
-    if (data.ok) {
+    if (data) {
       setPage(1);
       newsfeed();
       toast.success("post created successfully");
       setContent("");
       setImage({});
+      //socket
+      socket.emit("new-post", data);
     } else {
       toast.error(data.error);
     }

@@ -64,7 +64,7 @@ export const PostPublic = ({
                 <div style={{ marginLeft: "2rem" }}>
                   <CommentOutlined className="text-danger h4" />
                   <span style={{ marginLeft: "1rem" }}>
-                    <a>{post.comments.length} Comment</a>
+                    {post.comments.length} Comment
                   </span>
                 </div>
               </div>
